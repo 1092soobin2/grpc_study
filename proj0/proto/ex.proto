@@ -1,0 +1,14 @@
+syntax = "proto3";
+package proj0;
+
+service RemoteFunctionCall {
+    rpc remote_function_call (Param) returns (Retval) {}
+}
+
+message Param {
+    uint32 param0 = 1;
+}
+
+message Retval {
+    uint32 retval0 = 1;
+}

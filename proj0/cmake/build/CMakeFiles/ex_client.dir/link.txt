@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/ex_client.dir/ex_client.cc.o -o ex_client  libex_grpc_proto.a -lgrpc++_reflection -lgrpc++ -llibprotobuf 
