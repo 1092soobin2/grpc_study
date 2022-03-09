@@ -33,3 +33,4 @@
 
 **/cmake/
 **/.vscode/
+**/build/
