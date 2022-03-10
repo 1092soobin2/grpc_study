@@ -1,2 +1,0 @@
-/usr/bin/ar qc libex_grpc_proto.a CMakeFiles/ex_grpc_proto.dir/ex.grpc.pb.cc.o CMakeFiles/ex_grpc_proto.dir/ex.pb.cc.o
-/usr/bin/ranlib libex_grpc_proto.a
