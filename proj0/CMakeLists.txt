@@ -2,22 +2,24 @@ cmake_minimum_required(VERSION 3.5.1)
 
 project(proj0 C CXX)
 
+message(STATUS "Using gRPC via add_subdirectory.")
+
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(_PROTOBUF protobuf REQUIRED)
 pkg_check_modules(_GRPC grpc REQUIRED)
 
-set(CMAKE_PREFIX_PATH "$GRPC_DIR")
+add_subdirectory($ENV{HOME}/grpc ${CMAKE_CURRENT_BINARY_DIR}/grpc EXCLUDE_FROM_ALL)
+
+set(CMAKE_PREFIX_PATH "${_GRPC_INCLUDE_DIRS}")
 set(_PROTOBUF_LIBPROTOBUF libprotobuf)
 set(_REFLECTION grpc++_reflection)
 set(_GRPC_GRPCPP grpc++)
 
 # Proto file
-message(STATUS "Specify a proto file and proto file path.")
 get_filename_component(ex_proto "./proto/ex.proto" ABSOLUTE)
 get_filename_component(ex_proto_path "${ex_proto}" PATH)
 
 # Generated sources
-message(STATUS "Genrate from the proto file.")
 find_program(_PROTOBUF_PROTOC protoc REQUIRED)
 find_program(_GRPC_CPP_PLUGIN_EXECUTABLE grpc_cpp_plugin REQUIRED)
 set(ex_proto_srcs "${CMAKE_CURRENT_BINARY_DIR}/ex.pb.cc")
@@ -35,34 +37,30 @@ add_custom_command(
     DEPENDS "${ex_proto}")
 
 # Include generated *.pb.h files
-message(STATUS "Include the generated files.")
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
 # Create library: ex_grpc_proto 
-message(STATUS "Add library: ex_grpc_proto.")
 add_library(ex_grpc_proto
     ${ex_grpc_srcs}
     ${ex_grpc_hdrs}
     ${ex_proto_srcs}
     ${ex_proto_hdrs})
-target_include_directories(ex_grpc_proto
-    PRIVATE ${_PROTOBUF_INCLUDE_DIRS})
+# target_include_directories(ex_grpc_proto
+#     PRIVATE ${_GRPC_INCLUDE_DIRS})
 target_link_libraries(ex_grpc_proto
     ${_REFLECTION}
     ${_GRPC_GRPCPP}
-    ${_PROTOBUF_LIBPROTOBUF})
-
+    ${_PROTOBUF_LIBRARIES})
 # Target executables
-message(STATUS "Make executable files.")
 foreach(_target
     ex_server
     ex_client)
     add_executable(${_target} "${_target}.cc")
-    target_include_directories(${_target}
-        PRIVATE ${_GRPC_INCLUDE_DIRS})
+    # target_include_directories(${_target}
+    #     PRIVATE ${_GRPC_INCLUDE_DIRS})
     target_link_libraries(${_target}
         ex_grpc_proto
         ${_REFLECTION}
         ${_GRPC_GRPCPP}
-        ${_PROTOBUF_LIBPROTOBUF})
+        ${_PROTOBUF_LIBRARIES})
 endforeach()
