@@ -1,0 +1,1 @@
+/usr/bin/cc    -rdynamic CMakeFiles/example64.dir/test/example.o  -o example64  -Wl,-rpath,/home/soobin2/projects/revision-diag-sample/grpc_study/proj0/cmake/build/grpc/third_party/zlib libz.so.1.2.11 
