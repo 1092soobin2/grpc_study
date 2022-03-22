@@ -6,3 +6,4 @@ set(_FOO "./dummy.txt")
 message("In ${CMAKE_CURRENT_BINARY_DIR}, _FOO is defined: ${_FOO}")
 
 add_subdirectory(foo)
+add_subdirectory(bar)

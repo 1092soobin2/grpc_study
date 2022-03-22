@@ -5,3 +5,5 @@ if (NOT DEFINED _FOO)
 else()
 	message("In ${CMAKE_CURRENT_BINARY_DIR}, _FOO is ${_FOO}")
 endif()
+
+set(_BAR "../dummy.txt" PARENT_SCOPE)
