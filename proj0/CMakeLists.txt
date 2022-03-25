@@ -4,16 +4,38 @@ project(proj0 C CXX)
 
 message(STATUS "Using gRPC via add_subdirectory.")
 
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(_PROTOBUF protobuf REQUIRED)
-pkg_check_modules(_GRPC grpc REQUIRED)
+# find_package(PkgConfig REQUIRED)
+# pkg_check_modules(_PROTOBUF protobuf REQUIRED)
+# pkg_check_modules(_GRPC grpc REQUIRED)
 
-add_subdirectory($ENV{HOME}/grpc ${CMAKE_CURRENT_BINARY_DIR}/grpc EXCLUDE_FROM_ALL)
+# add_subdirectory($ENV{HOME}/grpc ${CMAKE_CURRENT_BINARY_DIR}/grpc EXCLUDE_FROM_ALL)
+# 상위 폴더에서 패치되어 있으면 패치 안 함.
+if (NOT DEFINED _GRPC_GRPCPP) 
+    message(STATUS "${CMAKE_CURRENT_BINARY_DIR}: Using gRPC via add_subdirectory (FetchContent).")
+    include(FetchContent)
+    FetchContent_Declare(
+    grpc
+    GIT_REPOSITORY https://github.com/grpc/grpc
+    # when using gRPC, you will actually set this to an existing tag, such as
+    # v1.25.0, v1.26.0 etc..
+    # For the purpose of testing, we override the tag used to the commit
+    # that's currently under test.
+    GIT_TAG        v1.45.0)
+    FetchContent_MakeAvailable(grpc)
 
-set(CMAKE_PREFIX_PATH "${_GRPC_INCLUDE_DIRS}")
-set(_PROTOBUF_LIBPROTOBUF libprotobuf)
-set(_REFLECTION grpc++_reflection)
-set(_GRPC_GRPCPP grpc++)
+    # Since FetchContent uses add_subdirectory under the hood, we can use
+    # the grpc targets directly from this build.
+    set(_PROTOBUF_LIBPROTOBUF libprotobuf)
+    set(_REFLECTION grpc++_reflection)
+    set(_PROTOBUF_PROTOC $<TARGET_FILE:protoc>)
+    set(_GRPC_GRPCPP grpc++)
+    set(_GRPC_CPP_PLUGIN_EXECUTABLE $<TARGET_FILE:grpc_cpp_plugin>)
+endif()
+
+# set(CMAKE_PREFIX_PATH "${_GRPC_INCLUDE_DIRS}")
+# set(_PROTOBUF_LIBPROTOBUF libprotobuf)
+# set(_REFLECTION grpc++_reflection)
+# set(_GRPC_GRPCPP grpc++)
 
 # Proto file
 get_filename_component(ex_proto "./proto/ex.proto" ABSOLUTE)
@@ -41,12 +63,10 @@ include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
 # Create library: ex_grpc_proto 
 add_library(ex_grpc_proto
-    ${ex_grpc_srcs}
+    ${ex_grpc_srcs}`
     ${ex_grpc_hdrs}
     ${ex_proto_srcs}
     ${ex_proto_hdrs})
-# target_include_directories(ex_grpc_proto
-#     PRIVATE ${_GRPC_INCLUDE_DIRS})
 target_link_libraries(ex_grpc_proto
     ${_REFLECTION}
     ${_GRPC_GRPCPP}
