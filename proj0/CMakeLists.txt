@@ -63,7 +63,7 @@ include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
 # Create library: ex_grpc_proto 
 add_library(ex_grpc_proto
-    ${ex_grpc_srcs}`
+    ${ex_grpc_srcs}
     ${ex_grpc_hdrs}
     ${ex_proto_srcs}
     ${ex_proto_hdrs})
